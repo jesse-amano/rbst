@@ -1,8 +1,6 @@
 package interfaces
 
 import (
-	"bytes"
-	"fmt"
 	"math/rand"
 	"reflect"
 	"sort"
@@ -34,14 +32,15 @@ func (s rs) Len() int           { return len(s) }
 func (s rs) Less(i, j int) bool { return s[i] < s[j] }
 func (s rs) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
-func TestRbst(t *testing.T) {
+func TestNode(t *testing.T) {
 	rng := rand.New(rand.NewSource(0))
-	testSizes := []int{1, 2, 5, 10, 16, 100, 1024, 99999}
+	testSizes := []int{1, 2, 5, 10, 16, 100, 1024}
 	if testing.Short() {
 		testSizes = []int{1, 2, 5, 10, 16}
 	}
 
 	var root *Node
+	_ = root
 
 	for _, size := range testSizes {
 		t.Logf("%d Integers", size)
@@ -51,9 +50,9 @@ func TestRbst(t *testing.T) {
 			if ok {
 				integers[i] = val.Interface().(z)
 				if i == 0 {
-					root = NewNode(integers[i])
+					root = newNode(integers[i])
 				} else {
-					root = Insert(root, NewNode(integers[i]))
+					insert(root, newNode(integers[i]))
 				}
 			} else {
 				t.Fatalf("test: Error generating values")
@@ -67,7 +66,7 @@ func TestRbst(t *testing.T) {
 			t.Errorf("some red children don't have black children")
 		}
 		sort.Sort(integers)
-		zseq := collect(root)
+		zseq := root.flatten()
 		misplaced := false
 		for i := range zseq {
 			if zseq[i].(z) != integers[i] {
@@ -85,9 +84,9 @@ func TestRbst(t *testing.T) {
 			if ok {
 				floats[i] = val.Interface().(r)
 				if i == 0 {
-					root = NewNode(floats[i])
+					root = newNode(floats[i])
 				} else {
-					root = Insert(root, NewNode(floats[i]))
+					root = insert(root, newNode(floats[i]))
 				}
 			} else {
 				t.Fatalf("test: Error generating values")
@@ -101,7 +100,7 @@ func TestRbst(t *testing.T) {
 			t.Errorf("some red children don't have black children")
 		}
 		sort.Sort(floats)
-		rseq := collect(root)
+		rseq := root.flatten()
 		for i := range rseq {
 			if rseq[i].(r) != floats[i] {
 				t.Errorf("Element %f out of place; expected %f", rseq[i], floats[i])
@@ -165,62 +164,4 @@ func redValidation(root *Node) bool {
 		return false
 	}
 	return true
-}
-
-func collect(root *Node) []Interface {
-	if root == nil || isLeaf(root) {
-		return []Interface{}
-	}
-	slice := collect(root.left)
-	slice = append(slice, root.Element)
-	slice = append(slice, collect(root.right)...)
-	return slice
-}
-
-func toString(nodes []*Node) (str string) {
-	empty := true
-	for _, node := range nodes {
-		if node != nil {
-			empty = false
-		}
-	}
-	if empty {
-		return ""
-	}
-
-	var next []*Node
-	buf := bytes.NewBufferString("\n")
-
-	defer func() {
-		r := recover()
-		if r != nil {
-			fmt.Fprint(buf, "PANIC")
-			str = buf.String()
-		}
-	}()
-
-	for i := 0; i < len(nodes); i++ {
-		if i != 0 {
-			fmt.Fprint(buf, "|")
-		}
-		n := nodes[i]
-		if n == nil {
-			fmt.Fprint(buf, "<nil>")
-			next = append(next, nil, nil)
-		} else if isLeaf(n) {
-			fmt.Fprint(buf, "LEAF")
-			next = append(next, nil, nil)
-		} else {
-			next = append(next, n.left, n.right)
-			fmt.Fprintf(buf, "[%v]", n.Element)
-			if n.isRed {
-				fmt.Fprint(buf, "R")
-			} else {
-				fmt.Fprint(buf, "B")
-			}
-		}
-	}
-
-	fmt.Fprint(buf, toString(next))
-	return buf.String()
 }

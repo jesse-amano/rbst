@@ -1,5 +1,24 @@
 package interfaces
 
+// Delete removes a node from its RBST.
+func (n *Node) Delete() {
+	var child *Node
+	if isLeaf(n.right) {
+		child = n.left
+	} else {
+		child = n.right
+	}
+
+	n.replace(child)
+	if !n.isRed {
+		if child.isRed {
+			child.isRed = false
+		} else {
+			deleteCase1(child)
+		}
+	}
+}
+
 func deleteCase1(n *Node) {
 	if n.parent != nil {
 		deleteCase2(n)
@@ -34,7 +53,7 @@ func deleteCase3(n *Node) {
 func deleteCase4(n *Node) {
 	s := n.sibling()
 
-	if (n.parent.isRed && !s.isRed && !s.left.isRed && !s.right.isRed) {
+	if n.parent.isRed && !s.isRed && !s.left.isRed && !s.right.isRed {
 		s.isRed = true
 		n.parent.isRed = false
 	} else {

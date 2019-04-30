@@ -5,6 +5,9 @@
 // are needed to make calling code type-safe.
 package interfaces
 
+// A type, typically an element, that satisfies rbst.Interface can be stored and sorted by the
+// types and functions in this package. The methods require that the elements of the collection
+// have at least a weak ordering.
 type Interface interface {
 	Less(v interface{}) bool
 	// Optionally, we could also require a method like
@@ -15,56 +18,26 @@ type Interface interface {
 	// stateful in this case
 }
 
-// Node methods are basically transliterated from Wikipedia
-// as a way of getting at least a mostly-right answer without
-// exhaustive testing
-type Node struct {
-	parent, left, right *Node
-	isRed               bool
-	Element             Interface
+// An rbst.RBST holds the root node of a red-black binary search tree.
+type RBST struct {
+	root *Node
 }
 
-func NewNode(v Interface) *Node {
-	return &Node{
-		Element: v,
-		left:    leaf(),
-		right:   leaf(),
+func (r *RBST) Insert(v Interface) {
+	if r.root == nil {
+		r.root = newNode(v)
+		return
 	}
+	r.root = insert(r.root, newNode(v))
 }
 
-func Insert(root *Node, n *Node) *Node {
-	insertRecurse(root, n)
-	insertRepairTree(n)
-
-	for root = n; root.parent != nil; {
-		root = root.parent
+func (r *RBST) Flatten() []Interface {
+	if r.root == nil || isLeaf(r.root) {
+		return []Interface{}
 	}
-	return root
+	return r.root.flatten()
 }
 
-func Delete(n *Node) {
-	var child *Node
-	if isLeaf(n.right) {
-		child = n.left
-	} else {
-		child = n.right
-	}
-
-	Replace(n, child)
-	if !n.isRed {
-		if child.isRed {
-			child.isRed = false
-		} else {
-			deleteCase1(child)
-		}
-	}
-}
-
-func Replace(n, child *Node) {
-	child.parent = n.parent
-	if n == n.parent.left {
-		n.parent.left = child
-	} else {
-		n.parent.right = child
-	}
+func (r *RBST) String() string {
+	return r.root.String()
 }

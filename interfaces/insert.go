@@ -1,5 +1,15 @@
 package interfaces
 
+func insert(root, n *Node) *Node {
+	insertRecurse(root, n)
+	insertRepairTree(n)
+
+	for root = n; root.parent != nil; {
+		root = root.parent
+	}
+	return root
+}
+
 func insertRecurse(root, n *Node) {
 	if root != nil {
 		if n.Element.Less(root.Element) {
