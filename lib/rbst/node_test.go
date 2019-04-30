@@ -58,7 +58,7 @@ func TestNode(t *testing.T) {
 				t.Fatalf("test: Error generating values")
 			}
 		}
-		t.Log(toString([]*Node{root}))
+		t.Log(root.String())
 		if !blackValidation(root) {
 			t.Errorf("uneven distribution of black child nodes")
 		}
@@ -66,7 +66,7 @@ func TestNode(t *testing.T) {
 			t.Errorf("some red children don't have black children")
 		}
 		sort.Sort(integers)
-		zseq := root.flatten()
+		zseq := root.Flatten()
 		misplaced := false
 		for i := range zseq {
 			if zseq[i].(z) != integers[i] {
@@ -92,7 +92,7 @@ func TestNode(t *testing.T) {
 				t.Fatalf("test: Error generating values")
 			}
 		}
-		t.Log(toString([]*Node{root}))
+		t.Log(root.String())
 		if !blackValidation(root) {
 			t.Errorf("uneven distribution of black child nodes")
 		}
@@ -100,7 +100,7 @@ func TestNode(t *testing.T) {
 			t.Errorf("some red children don't have black children")
 		}
 		sort.Sort(floats)
-		rseq := root.flatten()
+		rseq := root.Flatten()
 		for i := range rseq {
 			if rseq[i].(r) != floats[i] {
 				t.Errorf("Element %f out of place; expected %f", rseq[i], floats[i])

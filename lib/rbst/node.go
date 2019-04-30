@@ -14,10 +14,6 @@ type Node struct {
 	Element             Interface
 }
 
-func (n *Node) String() string {
-	return toString([]*Node{n})
-}
-
 func newNode(v Interface) *Node {
 	return &Node{
 		Element: v,
@@ -26,60 +22,65 @@ func newNode(v Interface) *Node {
 	}
 }
 
-func (n *Node) flatten() []Interface {
-	if n == nil || isLeaf(n) {
-		return []Interface{}
-	}
-	slice := n.left.flatten()
-	slice = append(slice, n.Element)
-	slice = append(slice, n.right.flatten()...)
-	return slice
-}
-
-func toString(nodes []*Node) (str string) {
-	empty := true
-	for _, node := range nodes {
-		if node != nil {
-			empty = false
-		}
-	}
-	if empty {
-		return ""
-	}
-
-	var next []*Node
+// String renders n and all its descendents into a string,
+// with each tier on its own line.
+func (n *Node) String() string {
 	buf := bytes.NewBufferString("\n")
+	yield := func(tier []*Node) {
+		fmt.Fprintln(buf, "")
+		for i, n := range tier {
+			if i != 0 {
+				fmt.Fprint(buf, "|")
+			}
 
-	defer func() {
-		r := recover()
-		if r != nil {
-			fmt.Fprint(buf, "PANIC")
-			str = buf.String()
-		}
-	}()
-
-	for i := 0; i < len(nodes); i++ {
-		if i != 0 {
-			fmt.Fprint(buf, "|")
-		}
-		n := nodes[i]
-		if n == nil {
-			fmt.Fprint(buf, "<nil>")
-			next = append(next, nil, nil)
-		} else if isLeaf(n) {
-			fmt.Fprint(buf, "LEAF")
-			next = append(next, nil, nil)
-		} else {
-			next = append(next, n.left, n.right)
-			fmt.Fprintf(buf, "[%v]", n.Element)
-			if n.isRed {
-				fmt.Fprint(buf, "R")
+			if n == nil {
+				fmt.Fprint(buf, "<nil>")
+			} else if isLeaf(n) {
+				fmt.Fprint(buf, "LEAF")
 			} else {
-				fmt.Fprint(buf, "B")
+				fmt.Fprintf(buf, "[%v]", n.Element)
+				if n.isRed {
+					fmt.Fprint(buf, "R")
+				} else {
+					fmt.Fprint(buf, "B")
+				}
 			}
 		}
 	}
-
-	fmt.Fprint(buf, toString(next))
+	n.visitBreadthFirst(yield)
 	return buf.String()
+}
+
+// Flatten returns a slice of the descendents of n, sorted from least to greatest
+// using the properties of the red/black tree.
+func (n *Node) Flatten() []Interface {
+	var s []Interface
+	yield := func(m *Node) {
+		s = append(s, m.Element)
+	}
+	n.visitDepthFirst(yield)
+	return s
+}
+
+// Find returns the least descendent whose element is not Less than v.
+// It may not be exactly equal to v, if v does not exactly exist as a descendent.
+// The caller should perform its own equality checks if equality is required.
+func (n *Node) Find(v Interface) *Node {
+	if n.Element.Less(v) {
+		if n.right == nil {
+			return nil
+		}
+		return n.right.Find(v)
+	}
+
+	if n.left == nil {
+		return n
+	}
+
+	candidate := n.left.Find(v)
+	if candidate == nil {
+		return n
+	} else {
+		return candidate
+	}
 }
