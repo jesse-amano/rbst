@@ -19,6 +19,15 @@ func (n *Node) Delete() {
 	}
 }
 
+func (n *Node) replace(child *Node) {
+	child.parent = n.parent
+	if n == n.parent.left {
+		n.parent.left = child
+	} else {
+		n.parent.right = child
+	}
+}
+
 func deleteCase1(n *Node) {
 	if n.parent != nil {
 		deleteCase2(n)
