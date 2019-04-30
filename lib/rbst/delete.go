@@ -1,4 +1,4 @@
-package interfaces
+package rbst
 
 // Delete removes a node from its RBST.
 func (n *Node) Delete() {

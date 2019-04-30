@@ -1,9 +1,9 @@
-// Package interfaces provides a red-black binary search tree
+// Package rbst provides a red-black binary search tree
 // that uses an interface to describe the elements it contains.
 // A potential drawback is that callers need to perform type assertions
 // to retrieve elements of an appropriate type, so some boilerplate wrappers
 // are needed to make calling code type-safe.
-package interfaces
+package rbst
 
 // A type, typically an element, that satisfies rbst.Interface can be stored and sorted by the
 // types and functions in this package. The methods require that the elements of the collection

@@ -1,4 +1,4 @@
-package interfaces
+package rbst
 
 func leaf() *Node {
 	var n Node

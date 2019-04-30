@@ -1,4 +1,4 @@
-package interfaces
+package rbst
 
 func insert(root, n *Node) *Node {
 	insertRecurse(root, n)

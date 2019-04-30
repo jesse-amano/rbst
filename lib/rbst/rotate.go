@@ -1,4 +1,4 @@
-package interfaces
+package rbst
 
 func (n *Node) rotateLeft() {
 	nnew := n.right
