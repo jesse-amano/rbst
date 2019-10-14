@@ -7,7 +7,7 @@ func (n *Node) visitBreadthFirst(f func([]*Node)) {
 	visitTier([]*Node{n}, f)
 }
 
-func visitTier(tier []*Node, f func([]*Node)) (nextTier []*Node) {
+func visitTier(tier []*Node, f func([]*Node)) {
 	empty := true
 	for _, node := range tier {
 		if node != nil {
@@ -30,7 +30,7 @@ func visitTier(tier []*Node, f func([]*Node)) (nextTier []*Node) {
 
 		next = append(next, n.left, n.right)
 	}
-	return next
+	visitTier(next, f)
 }
 
 func (n *Node) visitDepthFirst(f func(*Node)) {

@@ -27,7 +27,6 @@ func newNode(v Interface) *Node {
 func (n *Node) String() string {
 	buf := bytes.NewBufferString("\n")
 	yield := func(tier []*Node) {
-		fmt.Fprintln(buf, "")
 		for i, n := range tier {
 			if i != 0 {
 				fmt.Fprint(buf, "|")
@@ -46,6 +45,7 @@ func (n *Node) String() string {
 				}
 			}
 		}
+		fmt.Fprint(buf, "\n")
 	}
 	n.visitBreadthFirst(yield)
 	return buf.String()
@@ -80,7 +80,6 @@ func (n *Node) Find(v Interface) *Node {
 	candidate := n.left.Find(v)
 	if candidate == nil {
 		return n
-	} else {
-		return candidate
 	}
+	return candidate
 }

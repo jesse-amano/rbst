@@ -52,7 +52,7 @@ func TestNode(t *testing.T) {
 				if i == 0 {
 					root = newNode(integers[i])
 				} else {
-					insert(root, newNode(integers[i]))
+					root = insert(root, newNode(integers[i]))
 				}
 			} else {
 				t.Fatalf("test: Error generating values")
@@ -101,10 +101,14 @@ func TestNode(t *testing.T) {
 		}
 		sort.Sort(floats)
 		rseq := root.Flatten()
+		misplaced = false
 		for i := range rseq {
 			if rseq[i].(r) != floats[i] {
-				t.Errorf("Element %f out of place; expected %f", rseq[i], floats[i])
+				misplaced = true
 			}
+		}
+		if misplaced {
+			t.Errorf("Elements out of place\nE: %v\nA: %v", floats, rseq)
 		}
 	}
 }
