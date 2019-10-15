@@ -1,7 +1,10 @@
 package rbst
 
 import (
+	"flag"
+	"fmt"
 	"math/rand"
+	"os"
 	"reflect"
 	"sort"
 	"testing"
@@ -168,4 +171,20 @@ func redValidation(root *Node) bool {
 		return false
 	}
 	return true
+}
+
+func TestMain(m *testing.M) {
+	moo := flag.Bool("moo", false, "-")
+	flag.Parse()
+	if *moo {
+		fmt.Println(`                 (__)
+                 (oo)
+           /------\/
+          / |    ||
+         *  /\---/\
+            ~~   ~~
+..."Have you mooed today?"...`)
+		os.Exit(2)
+	}
+	os.Exit(m.Run())
 }
