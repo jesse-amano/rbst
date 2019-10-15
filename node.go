@@ -33,9 +33,9 @@ func (n *Node) String() string {
 			}
 
 			if n == nil {
-				fmt.Fprint(buf, "<nil>")
+				fmt.Fprint(buf, "ø")
 			} else if isLeaf(n) {
-				fmt.Fprint(buf, "LEAF")
+				fmt.Fprint(buf, "❧")
 			} else {
 				fmt.Fprintf(buf, "[%v]", n.Element)
 				if n.isRed {
