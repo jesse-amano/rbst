@@ -6,7 +6,7 @@
 package rbst
 
 // A type, typically an element, that satisfies rbst.Interface can be stored and sorted by the
-// types and functions in this package. The methods require that the elements of the collection
+// types and functions in this package. A binary search tree requires that its elements
 // have at least a weak ordering.
 type Interface interface {
 	Less(v interface{}) bool
@@ -26,8 +26,8 @@ func (r *RBST) Insert(v Interface) {
 	r.root = insert(r.root, newNode(v))
 }
 
-// VisitBreadthFirst visits each node in r, beginning with the root and proceeding
-// left-to-right across each tier before visiting the next tier.
+// VisitBreadthFirst visits each row in r, beginning with the root and proceeding
+// through each tier. Each cross-section is visited left-to-right.
 func (r *RBST) VisitBreadthFirst(f func([]*Node)) {
 	if r.root == nil {
 		return
